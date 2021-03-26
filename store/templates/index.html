@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{% load cart %}
+{% load custom_filter %}
+<!---BODY---->
+	<div class="container-fluid mt-3">
+		<div class="row">
+
+			<!--Filters-->
+			<div class="col-lg-3 mx-auto">
+				<div class="list-group">
+				  <a href="/" class="list-group-item list-group-item-action">All Products</a>
+				  {% for category in categories %}
+				  <a href="/?category={{category.id}}" class="list-group-item list-group-item-action">{{category.name}}</a>
+				  {% endfor %}
+				</div>
+			</div>
+
+			<!-- Products-->
+			<div id="products" class="col-lg-8 mx-auto">
+				<div class="row mx-auto">
+					{% for p in products %}
+					<div class="card mx-auto mb-3" id={{p.id}} style="width: 18rem;">
+						  <img class="card-img-top" src="{{p.image.url}}" alt="Card image cap">
+						  <div class="card-body">
+						    <h5 class="card-title">{{p.name}}</h5>
+						    <p class="card-text"><b>{{p.price|currency}}</b></p>
+						    <!--{{p | is_in_cart:request.session.cart}}-->
+						  </div>
+
+					<div class="card-footer p-0 no-gutters">
+						{% if p|is_in_cart:request.session.cart %}
+						<div class="row no-gutters">
+						<form action="/#{{p.id}}" method="POST" class="col-2">
+							{% csrf_token %}
+							<input hidden type="text" name="product_id" value="{{p.id}}">
+							<input hidden type="text" name="remove" value="True">
+							<input type="submit" value=" - " class="btn btn-block btn-secondary">
+						</form>
+						<div class="text-center col">{{p|cart_quantity:request.session.cart}} in cart</div>
+						<form action="/#{{p.id}}" method="POST" class="col-2">
+							{% csrf_token %}
+							<input hidden type="text" name="product_id" value="{{p.id}}">
+							<input type="submit" value=" + " class="btn btn-block btn-secondary">
+						</form>
+						</div>
+						{% else %}
+						<form action="/#{{p.id}}" method="POST" class="btn-block">
+						    	{% csrf_token %}
+						    	<input hidden type="text" name="product_id" value="{{p.id}}">
+						    	<input type="submit" class="btn btn-block btn-light" value="Add to cart">
+					    </form>
+					    {% endif %}
+					</div>
+					</div>
+
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

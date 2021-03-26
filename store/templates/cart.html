@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load cart %}
+{% load custom_filter %}
+	<div class="container">
+		<div class="border roounded p-4 m-4">
+			<p class="display-4 pl-4 ml-4">Your Cart</p>
+			<hr>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>SNo.</th>
+						<th>Image</th>
+						<th>Name</th>
+						<th>Price</th>
+						<th>Quantity</th>
+						<th>Total Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in products %}
+					<tr>
+						<td>{{forloop.counter}}</td>
+						<td><img class="rounded-circle" style="height: 80px;" src="{{p.image.url}}"></td>
+						<td>{{p.name}}</td>
+						<td>{{p.price|currency}}</td>
+						<td>{{p|cart_quantity:request.session.cart}}</td>
+						<td>{{p|total_price:request.session.cart|currency}}</td>
+					</tr>
+
+					{% endfor %}
+				</tbody>
+
+				<tfoot>
+					<tr>
+						<th colspan="4"></th>
+						<th colspan=""><b>Total</b></th>
+						<th><b>{{products|total_cart_price:request.session.cart|currency}}<b></th>
+					</tr>
+				</tfoot>
+			</table>
+			<hr>
+			<div class="m-3 p-3">
+				<a href="#" class="btn btn-outline-info border roounded col-lg-3 float-right" data-toggle="modal" data-target="#exampleModal">Check Out</a>
+			</div>
+		</div>
+	</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Check out form</h5><hr>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="m-2 p-2">
+      		<form action="/checkout" method="POST">
+      			{% csrf_token %}
+      			<div class="form-group">
+      				<label for="">Address</label>
+      				<input type="text" name="address" id="" class="form-control" placeholder="">
+      			</div> 
+      			<div class="form-group">
+      				<label for="">Phone number:</label>
+      				<input type="text" name="phone" id="" class="form-control" placeholder="">
+      			</div>
+      			<input type="submit" class="btn btn-outline-info col-lg-6 float-right" value="Check Out">    			
+      		</form>
+      	</div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock %}
